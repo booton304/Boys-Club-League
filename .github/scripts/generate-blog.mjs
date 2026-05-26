@@ -1,24 +1,34 @@
 import fs from 'fs';
 import path from 'path';
-import { GoogleGenAI } from '@google/genai';
-
-// Initialize the AI client
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 async function generateBlogPost() {
+  const apiKey = process.env.GEMINI_API_KEY;
+  
+  // Define the direct REST API endpoint for Gemini
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
   // 1. Fetch League Context
-  // You will eventually replace this string with actual fetch calls to the Sleeper API
   const leagueContext = "Recent waiver wire moves and trades in The Boy's Club league.";
 
   // 2. Generate Content
   const prompt = `Write a dramatic, engaging 300-word blog post for a fantasy football league named The Boy's Club. Use this context: ${leagueContext}. Format it in Markdown with a Title, Date, and Author frontmatter.`;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash',
-    contents: prompt,
+  // Format the payload according to the Gemini REST API specifications
+  const requestBody = {
+    contents: [{ parts: [{ text: prompt }] }]
+  };
+
+  // Execute the REST API call
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(requestBody)
   });
 
-  const blogContent = response.text;
+  const data = await response.json();
+  
+  // Extract the text from the API response structure
+  const blogContent = data.candidates[0].content.parts[0].text;
 
   // 3. Save to File System
   const dateString = new Date().toISOString().split('T')[0];
