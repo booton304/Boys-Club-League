@@ -1,28 +1,12 @@
-<script context="module">
-  export async function load({ page }) {
-    const slug = page.params.slug;
-    // Dynamically import the specific Markdown file matching the URL
-    const post = await import(`../../posts/${slug}.md`);
-
-    return {
-      props: {
-        Content: post.default,
-        meta: post.metadata
-      }
-    };
-  }
-</script>
-
 <script>
-  export let Content;
-  export let meta;
+  export let data;
 </script>
 
 <article>
-  <h1>{meta.title}</h1>
-  <p>Written by {meta.author} on {meta.date}</p>
+  <h1>{data.meta.title}</h1>
+  <p>Written by {data.meta.author} on {data.meta.date}</p>
   
   <hr />
   
-  <svelte:component this={Content} />
+  <svelte:component this={data.Content} />
 </article>

@@ -1,16 +1,9 @@
+export async function load({ params }) {
+  const slug = params.slug;
+  const post = await import(`../../../posts/${slug}.md`);
 
-import { enableBlog, getBlogPosts, getLeagueTeamManagers } from '$lib/utils/helper';
-
-export function load({ fetch, params }) {
-    if(!enableBlog) return false;
-    
-    const postID = params.slug;
-    const postsData = getBlogPosts(fetch);
-    const leagueTeamManagersData = getLeagueTeamManagers();
-
-    return {
-        postsData,
-        postID,
-        leagueTeamManagersData,
-    };
+  return {
+    Content: post.default,
+    meta: post.metadata
+  };
 }

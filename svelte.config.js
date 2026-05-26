@@ -1,19 +1,21 @@
 import { mdsvex } from "mdsvex";
-import adapter from '@sveltejs/adapter-auto'; // Your existing adapter
+import adapter from '@sveltejs/adapter-static';
 
 const config = {
-  // Tell Svelte to treat .md files as components
   extensions: [".svelte", ".md"],
-  
   preprocess: [
     mdsvex({
       extensions: [".md"]
     })
   ],
-
   kit: {
-    adapter: adapter()
-    // Keep your other existing kit settings here
+    adapter: adapter({
+      pages: 'build',
+      assets: 'build',
+      fallback: '404.html',
+      precompress: false,
+      strict: true
+    })
   }
 };
 
