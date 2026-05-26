@@ -1,38 +1,28 @@
-<script>
-    import { FullPost } from "$lib/components";
+<script context="module">
+  export async function load({ page }) {
+    const slug = page.params.slug;
+    // Dynamically import the specific Markdown file matching the URL
+    const post = await import(`../../posts/${slug}.md`);
 
-    export let data;
-    const {postsData, postID, leagueTeamManagersData} = data;
+    return {
+      props: {
+        Content: post.default,
+        meta: post.metadata
+      }
+    };
+  }
 </script>
 
-<style>
-    #main {
-        position: relative;
-        z-index: 1;
-        display: block;
-        margin: 30px auto;
-		width: 95%;
-		max-width: 1000px;
-        overflow-y: hidden;
-    }
+<script>
+  export let Content;
+  export let meta;
+</script>
 
-    .center {
-        text-align: center;
-        margin-bottom: 2em;
-    }
-
-    .viewAll {
-        text-decoration: none;
-        background-color: #920505;
-        color: #fff;
-        border-radius: 1em;
-        padding: 0.5em 1em;
-    }
-</style>
-
-<div id="main">
-    <FullPost {postsData} {postID} {leagueTeamManagersData} />
-    <div class="center">
-        <a class="viewAll" href="/blog">View More Blog Posts</a>
-    </div>
-</div>
+<article>
+  <h1>{meta.title}</h1>
+  <p>Written by {meta.author} on {meta.date}</p>
+  
+  <hr />
+  
+  <svelte:component this={Content} />
+</article>

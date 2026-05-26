@@ -1,22 +1,40 @@
-<script>
-    import { Posts } from "$lib/components";
+<script context="module">
+  export async function load() {
+    // Import all Markdown files from the posts directory
+    const allPostFiles = import.meta.glob('/src/posts/*.md');
+    const iterablePostFiles = Object.entries(allPostFiles);
 
-    export let data;
-    const {postsData, queryPage, filterKey, leagueTeamManagersData} = data;
+    const allPosts = await Promise.all(
+      iterablePostFiles.map(async ([path, resolver]) => {
+        const { metadata } = await resolver();
+        // Remove '/src/posts/' and '.md' to create the URL slug
+        const postPath = path.slice(11, -3); 
+
+        return {
+          meta: metadata,
+          path: postPath,
+        };
+      })
+    );
+
+    return {
+      props: {
+        posts: allPosts
+      }
+    };
+  }
 </script>
 
-<style>
-    #main {
-        position: relative;
-        z-index: 1;
-        display: block;
-        margin: 30px auto;
-		width: 95%;
-		max-width: 1000px;
-        overflow-y: hidden;
-    }
-</style>
+<script>
+  export let posts;
+</script>
 
-<div id="main">
-    <Posts {postsData} {queryPage} {filterKey} {leagueTeamManagersData} />
-</div>
+<h1>League Blog</h1>
+<ul>
+  {#each posts as post}
+    <li>
+      <a href={`/blog/${post.path}`}>{post.meta.title}</a>
+      <p>Published on {post.meta.date}</p>
+    </li>
+  {/each}
+</ul>
