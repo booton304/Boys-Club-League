@@ -1,21 +1,18 @@
-export async function load() {
-  const allPostFiles = import.meta.glob('/src/posts/*.md');
-  const iterablePostFiles = Object.entries(allPostFiles);
 
-  const allPosts = await Promise.all(
-    iterablePostFiles.map(async ([path, resolver]) => {
-      const { metadata } = await resolver();
-      // Remove '/src/posts/' and '.md' to create the URL slug
-      const postPath = path.slice(11, -3);
+import { enableBlog, getBlogPosts, getLeagueTeamManagers } from '$lib/utils/helper';
 
-      return {
-        meta: metadata,
-        path: postPath,
-      };
-    })
-  );
+export function load({ url, fetch }) {
+    if(!enableBlog) return false;
 
-  return {
-    posts: allPosts
-  };
+    const queryPage = url?.searchParams?.get('page') || 1;
+    const filterKey = url?.searchParams?.get('filter') || '';
+    const postsData = getBlogPosts(fetch);
+    const leagueTeamManagersData = getLeagueTeamManagers();
+
+    return {
+        queryPage,
+        postsData,
+        filterKey,
+        leagueTeamManagersData,
+    };
 }
