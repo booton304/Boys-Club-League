@@ -1,13 +1,22 @@
 <script>
-  export let data;
+    import { Posts } from "$lib/components";
+
+    export let data;
+    const {postsData, queryPage, filterKey, leagueTeamManagersData} = data;
 </script>
 
-<h1>League Blog</h1>
-<ul>
-  {#each data.posts as post}
-    <li>
-      <a href={`/blog/${post.path}`}>{post.meta.title}</a>
-      <p>Published on {post.meta.date}</p>
-    </li>
-  {/each}
-</ul>
+<style>
+    #main {
+        position: relative;
+        z-index: 1;
+        display: block;
+        margin: 30px auto;
+		width: 95%;
+		max-width: 1000px;
+        overflow-y: hidden;
+    }
+</style>
+
+<div id="main">
+    <Posts {postsData} {queryPage} {filterKey} {leagueTeamManagersData} />
+</div>
